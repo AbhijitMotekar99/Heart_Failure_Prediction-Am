@@ -1,5 +1,5 @@
 # Heart_Failure_Prediction-Am
-## Heart Faikure prediction model using Ensemble Learning Techniques
+### Heart Failure prediction model using Ensemble Learning Techniques
 ## Team
 1. Abhijit Motekar
 2. Gayatri Joshi
