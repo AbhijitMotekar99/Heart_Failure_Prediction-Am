@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heart Failure Prediction Chatbot</title>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+
+      /* Scrollbar Track */
+      ::-webkit-scrollbar {
+        width: 12px;
+      }
+
+      /* Scrollbar Thumb (the draggable part) */
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(
+          90deg,
+          #4a90e2,
+          #357abd
+        ); /* Gradient background */
+        border-radius: 10px; /* Rounded corners */
+        border: 2px solid #f0f4f8; /* Border to match the background */
+      }
+
+      /* Scrollbar Track (the background) */
+      ::-webkit-scrollbar-track {
+        background: #f0f4f8; /* Background color of the track */
+        border-radius: 10px; /* Rounded corners */
+      }
+
+      /* Scrollbar Corner (optional) */
+      ::-webkit-scrollbar-corner {
+        background: #f0f4f8; /* Background color for the corner */
+      }
+
+      @keyframes moveLeftRight {
+        0% {
+          left: 30px;
+        }
+        50% {
+          left: 60px;
+        }
+        100% {
+          left: 30px;
+        }
+      }
+
+      .return-btn {
+        position: fixed;
+        height: 30px;
+        width: 20px;
+        top: 50px;
+        left: 30px;
+        background: linear-gradient(90deg, #0d66cd, #234e7a);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 50%;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        z-index: 10;
+        animation: moveLeftRight 3s ease-in-out infinite;
+      }
+
+      .return-btn:hover {
+        color: white;
+        background: linear-gradient(90deg, #13385d, #08478f);
+        box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+        animation-play-state: paused;
+      }
+
+      /* Global Styles */
+      body {
+        margin: 0;
+        font-family: "Poppins", Arial, sans-serif;
+        background-color: #f0f4f8;
+      }
+
+      /* Chatbot Container */
+      .chatbot-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Title Section */
+      .title-section {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .title-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .navbar-logo-img {
+        height: 40px; /* Adjust the size of the logo */
+        width: auto; /* Maintain aspect ratio */
+      }
+
+      .hfp-text {
+        font-size: 32px; /* Adjust the size of "HFP" */
+        font-weight: bold;
+        color: #08478f; /* Match your theme color */
+      }
+
+      .chatbot-text {
+        font-size: 32px; /* Adjust the size of "Chatbot" */
+        font-weight: bold;
+        color: #08478f; /* Match your theme color */
+        display: flex;
+        align-items: center;
+        gap: 5px; /* Space between text and icon */
+      }
+
+      .chatbot-text i {
+        font-size: 32px; /* Adjust the size of the icon */
+        color: #08478f; /* Match your theme color */
+      }
+
+      .title-section p {
+        font-size: 18px;
+        color: #555;
+        margin-top: 10px; /* Add some space between the title and subtitle */
+      }
+
+      /* Chat Window */
+      .chat-window {
+        flex: 1;
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        overflow-y: auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .message {
+        display: flex;
+        margin-bottom: 15px;
+      }
+
+      .message.user {
+        justify-content: flex-end;
+      }
+
+      .message.bot {
+        justify-content: flex-start;
+      }
+
+      .message-content {
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 70%;
+      }
+
+      .message.user .message-content {
+        background-color: #08478f;
+        color: white;
+      }
+
+      .message.bot .message-content {
+        background-color: #f0f4f8;
+        color: #08478f;
+      }
+
+      .message-time {
+        font-size: 12px;
+        margin-top: 5px;
+        color: #777;
+      }
+
+      /* Loader inside bot message */
+      .message.bot .loader {
+        text-align: center;
+        padding: 10px;
+      }
+
+      .message.bot .spinner {
+        border: 4px solid #ffffff;
+        border-top: 4px solid #08478f;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      .message.bot .loader p {
+        margin-top: 5px;
+        font-size: 14px;
+        color: #555;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Input Area */
+      .input-area {
+        margin-top: 20px;
+        background-color: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .suggestions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        overflow-x: auto;
+      }
+
+      .suggestions button {
+        white-space: nowrap;
+        padding: 8px 12px;
+        background-color: #f0f4f8;
+        border-radius: 20px;
+        font-size: 16px;
+        color: #08478f;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .suggestions button:hover {
+        background-color: #08478f;
+        color: white;
+      }
+
+      .input-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .input-container input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        font-size: 17px;
+      }
+
+      .input-container button {
+        padding: 10px;
+        background-color: #08478f;
+        color: white;
+        border: none;
+        font-size: 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s;
+      }
+
+      .input-container button:hover {
+        background-color: #13385d;
+      }
+
+      /* Mic Button */
+      .mic-button {
+        color: #08478f;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      .mic-button.listening {
+        color: red;
+      }
+
+      /* File Input */
+      .file-input {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="{{ url_for('home') }}" class="return-btn">
+      <i class="bx bx-left-arrow-alt"></i>
+    </a>
+    <div class="chatbot-container">
+      <!-- Title Section -->
+      <div class="title-section">
+        <div class="title-content">
+          <!-- Logo -->
+          <img
+            src="{{ url_for('static', filename='Assests/logo.png') }}"
+            alt="HFP Logo"
+            class="navbar-logo-img"
+          />
+          <!-- Text (HFP) -->
+          <span class="hfp-text">HFP</span>
+          <!-- Chatbot Text and Icon -->
+          <span class="chatbot-text"
+            >Chatbot <i class="bx bx-message-rounded"></i
+          ></span>
+        </div>
+        <p>
+          Get instant insights and recommendations about heart health. Ask me
+          anything!
+        </p>
+      </div>
+
+      <!-- Chat Window -->
+      <div class="chat-window" id="chat-window">
+        <!-- Messages will be dynamically added here -->
+      </div>
+
+      <!-- Input Area -->
+      <div class="input-area">
+        <div class="suggestions">
+          <button
+            onclick="handleSuggestionClick('The user is a [INPUT AGE]-year-old [INPUT GENDER] with the following health metrics: Resting ECG - [INPUT RESTING ECG], Chest Pain Type - [INPUT CHEST PAIN TYPE], Exercise Angina - [INPUT EXERCISE ANGINA], ST Slope - [INPUT ST SLOPE], Resting Blood Pressure - [INPUT RESTING BP], Cholesterol - [INPUT CHOLESTEROL], Fasting Blood Sugar - [INPUT FASTING BS], Max Heart Rate - [INPUT MAX HR], Oldpeak - [INPUT OLDPEAK]. The predicted probability of heart failure is [INPUT PREDICTED PROBABILITY]%. Provide a detailed diet and lifestyle plan to reduce the risk of heart failure.')"
+          >
+            Diet and habit Custom template
+          </button>
+
+          <button
+            onclick="handleSuggestionClick('What are the symptoms of heart failure?')"
+          >
+            Symptoms of Heart Failure
+          </button>
+
+          <button
+            onclick="handleSuggestionClick('How can I reduce my cholesterol?')"
+          >
+            Reduce Cholesterol
+          </button>
+        </div>
+        <div class="input-container">
+          <!-- Mic Button -->
+          <button class="mic-button" id="mic-button" onclick="handleMicClick()">
+            <i class="bx bx-microphone"></i>
+          </button>
+
+          <!-- Clip Button -->
+          <button onclick="document.getElementById('file-input').click()">
+            <i class="bx bx-paperclip"></i>
+          </button>
+          <input
+            type="file"
+            id="file-input"
+            class="file-input"
+            onchange="handleFileUpload(event)"
+          />
+
+          <!-- Input Field -->
+          <input
+            type="text"
+            id="chat-input"
+            placeholder="Ask anything about heart health…"
+            onkeypress="handleKeyPress(event)"
+          />
+
+          <!-- Send Button -->
+          <button onclick="handleSend()">
+            <i class="bx bx-send"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const chatWindow = document.getElementById("chat-window");
+      const chatInput = document.getElementById("chat-input");
+      const micButton = document.getElementById("mic-button");
+      const fileInput = document.getElementById("file-input");
+
+      let isListening = false;
+      let recognition;
+
+      // Function to initialize speech recognition
+      function initializeSpeechRecognition() {
+        if (
+          "SpeechRecognition" in window ||
+          "webkitSpeechRecognition" in window
+        ) {
+          const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+          recognition = new SpeechRecognition();
+
+          recognition.continuous = false; // Stop after one result
+          recognition.interimResults = false; // Only final results
+          recognition.lang = "en-US"; // Set language
+          recognition.maxAlternatives = 1; // Only one result
+
+          recognition.onstart = () => {
+            console.log("Speech recognition started.");
+            isListening = true;
+            micButton.classList.add("listening");
+          };
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            console.log("Recognized speech:", transcript);
+            chatInput.value = transcript;
+            isListening = false;
+            micButton.classList.remove("listening");
+          };
+
+          recognition.onerror = (event) => {
+            console.error("Speech recognition error:", event.error);
+            addMessage("Error: Could not recognize speech.", "bot");
+            isListening = false;
+            micButton.classList.remove("listening");
+          };
+
+          recognition.onend = () => {
+            console.log("Speech recognition ended.");
+            isListening = false;
+            micButton.classList.remove("listening");
+          };
+        } else {
+          console.error("Web Speech API is not supported in this browser.");
+          alert("Your browser does not support speech recognition.");
+        }
+      }
+
+      // Function to handle mic clicks
+      function handleMicClick() {
+        if (!recognition) {
+          initializeSpeechRecognition();
+        }
+
+        if (isListening) {
+          recognition.stop(); // Stop listening if already active
+          isListening = false;
+          micButton.classList.remove("listening");
+        } else {
+          try {
+            recognition.start(); // Start listening
+          } catch (error) {
+            console.error("Error starting speech recognition:", error);
+            alert(
+              "Error: Could not start speech recognition. Please ensure microphone access is allowed."
+            );
+          }
+        }
+      }
+
+      // Function to handle sending messages
+      function handleSend() {
+        const message = chatInput.value.trim();
+        if (message) {
+          // Add user message
+          addMessage(message, "user");
+          chatInput.value = "";
+
+          // Create a bot message container with a loader
+          const botMessageContainer = document.createElement("div");
+          botMessageContainer.classList.add("message", "bot");
+
+          // Add loader to the bot message container
+          botMessageContainer.innerHTML = `
+      <div class="message-content">
+        <div class="loader">
+          <div class="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    `;
+
+          // Append the bot message container to the chat window
+          chatWindow.appendChild(botMessageContainer);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+
+          // Send message to the backend
+          fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: message }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Replace the loader with the bot's response
+              botMessageContainer.innerHTML = `
+          <div class="message-content">
+            <div>${data.reply}</div>
+            <span class="message-time">${new Date().toLocaleTimeString()}</span>
+          </div>
+        `;
+            })
+            .catch((error) => {
+              // Replace the loader with an error message
+              botMessageContainer.innerHTML = `
+          <div class="message-content">
+            <div>Error: Could not connect to the server.</div>
+            <span class="message-time">${new Date().toLocaleTimeString()}</span>
+          </div>
+        `;
+              console.error("Error:", error);
+            });
+        }
+      }
+
+      // Function to add a message to the chat window
+      function addMessage(text, sender) {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message", sender);
+
+        // Use innerHTML to render HTML content
+        messageElement.innerHTML = `
+        <div class="message-content">
+            <div>${text}</div>
+            <span class="message-time">${new Date().toLocaleTimeString()}</span>
+        </div>
+    `;
+
+        chatWindow.appendChild(messageElement);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+
+      // Function to handle suggestion clicks
+      function handleSuggestionClick(suggestion) {
+        chatInput.value = suggestion;
+      }
+
+      // Function to handle file uploads
+      function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          addMessage(`File uploaded: ${file.name}`, "user");
+        }
+      }
+
+      // Function to handle Enter key press
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          handleSend();
+        }
+      }
+    </script>
+  </body>
+</html>
