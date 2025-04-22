@@ -14,7 +14,6 @@ This project predicts the likelihood of heart failure using **ensemble machine l
 - [How to Run](#how-to-run)
 - [Screenshots](#screenshots)
 - [Contributors](#contributors)
-- [License](#license)
 
 ---
 
