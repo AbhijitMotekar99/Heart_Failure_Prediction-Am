@@ -10,9 +10,6 @@ genai.configure(api_key=API_KEY)
 
 chatbot_bp = Blueprint('chatbot', __name__)
 
-# model = genai.GenerativeModel('gemini-2.0-flash')
-model = genai.GenerativeModel()
-
 HEART_RELATED_KEYWORDS = [
     "heart", "cardiac", "cardiovascular", "cholesterol", "blood pressure",
     "heart attack", "heart failure", "hypertension", "arrhythmia", "angina",
@@ -70,7 +67,7 @@ def chat():
 
     try:
         print(f"Sending message to Gemini: {user_message}")
-        response = model.generate_content(user_message)
+        response = genai.generate_text(prompt=user_message)  # Correct way to generate text
         print(f"Received response from Gemini: {response.text}")
 
         formatted_reply = format_response(response.text)
