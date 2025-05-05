@@ -10,7 +10,8 @@ genai.configure(api_key=API_KEY)
 
 chatbot_bp = Blueprint('chatbot', __name__)
 
-model = genai.GenerativeModel('gemini-2.0-flash')
+# model = genai.GenerativeModel('gemini-2.0-flash')
+model = genai.GenerativeModel()
 
 HEART_RELATED_KEYWORDS = [
     "heart", "cardiac", "cardiovascular", "cholesterol", "blood pressure",
