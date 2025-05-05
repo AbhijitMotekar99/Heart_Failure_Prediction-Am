@@ -4,4 +4,5 @@ gunicorn
 scikit-learn
 numpy
 pandas
+catboost
 google-generativeai==0.1.0
